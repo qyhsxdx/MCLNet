@@ -168,7 +168,7 @@ def main_worker(args, args_main):
     criterion.append(criterion_SupCon)
 
     # set optimizer
-    optimizer = select_optimizer(args.optim, main_net)
+    optimizer = select_optimizer(args, main_net)
 
     # start training and testing
     print("==> Start training...")
