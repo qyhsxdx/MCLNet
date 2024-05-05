@@ -270,13 +270,13 @@ class embed_net(nn.Module):
             x_auxiliary2 = torch.cat((feat_list1[1], feat_list2[1]), dim=0)
         elif modal == 1:
             x, feat_list1 = self.visible_module(x1)
-            x_auxiliary1 = torch.cat((feat_list1[0], feat_list1[0]), dim=0)
-            x_auxiliary2 = torch.cat((feat_list1[1], feat_list1[1]), dim=0)
+            x_auxiliary1 = feat_list1[0]
+            x_auxiliary2 = feat_list1[1]
 
         elif modal == 2:
             x, feat_list2 = self.thermal_module(x2)
-            x_auxiliary1 = torch.cat((feat_list2[0], feat_list2[0]), dim=0)
-            x_auxiliary2 = torch.cat((feat_list2[1], feat_list2[1]), dim=0)
+            x_auxiliary1 = feat_list2[0]
+            x_auxiliary2 = feat_list2[1]
 
         # shared block
         if self.non_local == "on":
@@ -319,7 +319,6 @@ class embed_net(nn.Module):
             x, feat_list3 = self.base_resnet(x)
             x_auxiliary3 = feat_list3[0]
 
-
         if self.gm_pool == "on":
             x_pool1 = gem(x_auxiliary1)
             x_pool2 = gem(x_auxiliary2)
@@ -336,7 +335,6 @@ class embed_net(nn.Module):
             x_pool4 = self.avgpool(x)
             x_pool4 = x_pool4.view(x_pool4.size(0), x_pool4.size(1))
             x_pool = [x_pool1, x_pool2, x_pool3, x_pool4]
-
         feat = self.bottleneck(x_pool4)
 
         if self.training:
