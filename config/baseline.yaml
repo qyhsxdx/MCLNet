@@ -13,12 +13,7 @@ arch: resnet50               # network baseline
 pool_dim: 2048               # pooling dim: 2048 for resnet50
 per_add_iters: 5             # number of iters adding to coefficient of GRL for each training batch
 lambda_sk: 25                # hyperparameter for Sinkhorn-Knopp algorithm
-no_local: off                 #
 gm_pool: on                  #
-pcb: off                     # pcb setting
-num_strips: 4                # pcb setting
-local_feat_dim: 256          # pcb setting
-re_rank: no                  #performing reranking. [random_walk | k_reciprocal | no]
 
 ## optimizer parameters
 optim: sgd                  # optimizer: adam or sgd
