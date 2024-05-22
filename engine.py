@@ -4,7 +4,6 @@ import torch
 from torch.autograd import Variable
 from utils import AverageMeter
 from eval_metrics import eval_sysu, eval_regdb
-from re_rank import random_walk, k_reciprocal
 from loss import KL_divergence
 
 
@@ -132,16 +131,8 @@ def tester(args, epoch, main_net, test_mode, gall_label, gall_loader, query_labe
 
     start = time.time()
     # compute the similarity
-    if args.re_rank == 'random_walk':
-        distmat = random_walk(query_feat, gall_feat)
-        distmat_att = random_walk(query_feat_att, gall_feat_att)
-    elif args.re_rank == 'k_reciprocal':
-        distmat = k_reciprocal(query_feat, gall_feat)
-        distmat_att = k_reciprocal(query_feat_att, gall_feat_att)
-
-    else:
-        distmat = -np.matmul(query_feat, np.transpose(gall_feat))
-        distmat_att = -np.matmul(query_feat_att, np.transpose(gall_feat_att))
+    distmat = -np.matmul(query_feat, np.transpose(gall_feat))
+    distmat_att = -np.matmul(query_feat_att, np.transpose(gall_feat_att))
 
     # evaluation
     if args.dataset == 'regdb':
