@@ -230,23 +230,7 @@ class embed_net(nn.Module):
         self.pcb = pcb
 
         if self.non_local == "on":
-            layers = [3, 4, 6, 3]
-            non_layers = [0, 2, 3, 0]
-            self.NL_1 = nn.ModuleList(
-                [Non_local(256) for i in range(non_layers[0])])
-            self.NL_1_idx = sorted([layers[0] - (i+1) for i in range(non_layers[0])])
-
-            self.NL_2 = nn.ModuleList(
-                [Non_local(512) for i in range(non_layers[1])])
-            self.NL_2_idx = sorted([layers[1] - (i + 1) for i in range(non_layers[1])])
-
-            self.NL_3 = nn.ModuleList(
-                [Non_local(1024) for i in range(non_layers[2])])
-            self.NL_3_idx = sorted([layers[2] - (i + 1) for i in range(non_layers[2])])
-
-            self.NL_4 = nn.ModuleList(
-                [Non_local(2048) for i in range(non_layers[3])])
-            self.NL_4_idx = sorted([layers[3] - (i + 1) for i in range(non_layers[3])])
+            pass
 
         pool_dim = 2048
         self.l2norm = Normalize(2)
@@ -280,41 +264,7 @@ class embed_net(nn.Module):
 
         # shared block
         if self.non_local == "on":
-            NL1_counter = 0
-            if len(self.NL_1_idx) == 0: self.NL_1_idx = [-1]
-            for i in range(len(self.base_resnet.base.layer1)):
-                x = self.base_resnet.base.layer1[i](x)
-                if i == self.NL_1_idx[NL1_counter]:
-                    _, C, H, W = x.shape
-                    x = self.NL_1[NL1_counter](x)
-                    NL1_counter += 1
-            # layer2
-            NL2_counter = 0
-            if len(self.NL_2_idx) == 0: self.NL_2_idx = [-1]
-            for i in range(len(self.base_resnet.base.layer2)):
-                x = self.base_resnet.base.layer2[i](x)
-                if i == self.NL_2_idx[NL2_counter]:
-                    _, C, H, W = x.shape
-                    x = self.NL_2[NL2_counter](x)
-                    NL2_counter += 1
-            # layer3
-            NL3_counter = 0
-            if len(self.NL_3_idx) == 0: self.NL_3_idx = [-1]
-            for i in range(len(self.base_resnet.base.layer3)):
-                x = self.base_resnet.base.layer3[i](x)
-                if i == self.NL_3_idx[NL1_counter]:
-                    _, C, H, W = x.shape
-                    x = self.NL_3[NL3_counter](x)
-                    NL3_counter += 1
-            # layer4
-            NL4_counter = 0
-            if len(self.NL_4_idx) == 0: self.NL_4_idx = [-1]
-            for i in range(len(self.base_resnet.base.layer4)):
-                x = self.base_resnet.base.layer4[i](x)
-                if i == self.NL_4_idx[NL4_counter]:
-                    _, C, H, W = x.shape
-                    x = self.NL_4[NL4_counter](x)
-                    NL4_counter += 1
+            pass
         else:
             x, feat_list3 = self.base_resnet(x)
             x_auxiliary3 = feat_list3[0]
