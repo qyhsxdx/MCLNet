@@ -1,0 +1,54 @@
+## Note: color = rgb = visible, thermal = ir = infrared.
+
+## dataset parameters
+dataset: llcm               # sysu or regdb or llcm
+dataset_path: ./datasets/     # dataset root path
+trial: 1                     # only for regdb test
+mode: all                    # all or indoor (sysu test), thermaltovisible or visibletothermal (regdb test)
+workers: 4                   # number of data loading workers (default: 4)
+dataset_num_size: 1          # the multiple of dataset size per trainloader
+
+## model parameters
+arch: resnet50               # network baseline
+pool_dim: 2048               # pooling dim: 2048 for resnet50
+per_add_iters: 5             # number of iters adding to coefficient of GRL for each training batch
+lambda_sk: 25                # hyperparameter for Sinkhorn-Knopp algorithm
+no_local: off                 #
+gm_pool: on                  #
+
+
+
+## optimizer parameters
+optim: sgd                  # optimizer: adam or sgd
+lr: 0.1                     # learning rate: 0.00035 for adam / 0.1 for sgd
+
+## normal parameters
+file_name: SCDS/        # log file name
+seed: 0                      # random seed
+gpu: 0                       # gpu device ids for CUDA_VISIBLE_DEVICES
+model_path: save_model/      # model save path
+log_path: log/               # log save path
+vis_log_path: vis_log/       # tensorboard log save path
+save_epoch: 10               # save model every few epochs
+img_w: 144                   # image width
+img_h: 288                   # image height
+train_batch_size: 4          # training batch size: 4
+num_pos: 4                   # number of pos per identity for each modality: 8
+test_batch_size: 64          # testing batch size
+start_epoch: 0               # start training epoch
+end_epoch: 151                # end training epoch
+eval_epoch: 2                # testing epochs
+share_net: 3                 # share block
+
+## loss parameters
+margin: 0.3                  # triplet loss margin
+w_center: 2.0                # trade-off parameter
+lambda_vr: 0.1               # coefficient of prediction alignment loss
+lambda_rv: 0.5               # coefficient of prediction alignment loss
+dist_disc: margin_mmd        # None or margin_mmd
+dist_w: 0.25                 #
+supcon: 5.0
+KL_div: 5.0
+
+
+
