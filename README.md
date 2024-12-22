@@ -1,4 +1,4 @@
-### Multi-Scale Contrastive Learning with Hierarchical Knowledge Synergy for Cross-Modality Camera Person Re-identification
+### Multi-Scale Contrastive Learning with Hierarchical Knowledge Synergy for Visible-Infrared Person Re-identification
 
 Pytorch Code of MCLNet for VI-ReID on SYSU-MM01, LLCM, and RegDB datasets. 
 
