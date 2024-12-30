@@ -41,60 +41,6 @@ class SepConv(nn.Module):
     def forward(self, x):
         return self.op(x)
 
-#---shrinkage block--------#
-class Shrinkage(nn.Module):
-    def __init__(self, channel, gap_size):
-        super(Shrinkage, self).__init__()
-        self.gap = nn.AdaptiveAvgPool2d(gap_size)
-        self.fc = nn.Sequential(
-            nn.Linear(channel, channel),
-            nn.BatchNorm1d(channel),
-            nn.ReLU(inplace=True),
-            nn.Linear(channel, channel),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x):
-        x_raw = x
-        x = torch.abs(x)
-        x_abs = x
-        x = self.gap(x)
-        x = torch.flatten(x, 1)
-        #average = torch.mean(x, dim=1, keepdim=True)  # CS
-        average = x    #CW
-        x = self.fc(x)
-        x = torch.mul(average, x)
-        x = x.unsqueeze(2).unsqueeze(2)
-        # soft thresholding
-        sub = x_abs - x
-        zeros = sub - sub
-        n_sub = torch.max(sub, zeros)
-        x = torch.mul(torch.sign(x_raw), n_sub)  # torch.sign(input, output=None),符号函数，input >0,取1；=0取0；<0取-1
-        return x
-
-
-#-----IN + BN----------#
-class IBN(nn.Module):
-    """
-    IBN with BN:IN = 7:1
-    """
-
-    def __init__(self, planes):
-        super(IBN, self).__init__()
-        half1 = int(planes / 2)
-        self.half = half1
-        half2 = planes - half1
-        self.IN = nn.InstanceNorm2d(half1, affine=True)
-        self.BN = nn.BatchNorm2d(half2)
-
-    def forward(self, x):
-        split = torch.split(x, self.half, dim=1)
-        out1 = self.IN(split[0].contiguous())
-        out2 = self.BN(split[1].contiguous())
-        # out2 = self.BN(torch.cat(split[1:], dim=1).contiguous())
-        out = torch.cat((out1, out2), 1)
-        return out
-
 class BasicBlock(nn.Module):
     expansion = 1
 
@@ -129,13 +75,10 @@ class BasicBlock(nn.Module):
 class Bottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, dilation=1, with_IBN = False, with_shrinkage = True):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, dilation=1):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
-        if with_IBN:
-            self.bn1 = IBN(planes)
-        else:
-            self.bn1 = nn.BatchNorm2d(planes)
+        self.bn1 = nn.BatchNorm2d(planes)
         # original padding is 1; original dilation is 1
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=dilation, bias=False,
                                dilation=dilation)
@@ -145,8 +88,6 @@ class Bottleneck(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
         self.stride = stride
-        if with_shrinkage:
-            self.shrinkage = Shrinkage(planes * 4, gap_size=(1, 1))
 
     def forward(self, x):
         residual = x
@@ -161,8 +102,6 @@ class Bottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-
-        # out = self.shrinkage(out)
 
         if self.downsample is not None:
             residual = self.downsample(x)
